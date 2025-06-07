@@ -31,7 +31,7 @@
             transition: all 0.3s ease-in-out; /* Smoother transition */
             cursor: pointer;
             border: 2px solid; /* Define border, color set by specific classes */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* More pronounced shadow */
+            box-shadow: 10px 6px 15px rgba(0, 0, 0, 0.2); /* More pronounced shadow */
             text-align: center;
             width: 100%;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Subtle text shadow */
@@ -260,6 +260,7 @@
 
         /* Hint: Deeper clip-path for correct answer button (only tooth1 is deeper) */
         .hint-clip {
+            box-shadow: 5px 6px 15px rgba(0, 0, 0, 0.2); /* More pronounced shadow */
             clip-path: polygon(
                 0% 0%,                  /* Top-left */
                 100% 0%,                /* Top-right */
