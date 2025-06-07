@@ -14,14 +14,17 @@ TOEIC Zombie is a simple web-based vocabulary quiz designed to help you practice
 ## Getting Started
 
 1. Clone or download this repository.
-2. Open `index.html` in a modern web browser. (An internet connection is required to load Tailwind CSS and Google Fonts from their CDNs.)
+2. Open `vocabulary.js` in a modern web browser. (An internet connection is required to load Tailwind CSS and Google Fonts from their CDNs.)
 3. Click **เริ่มเล่น!** to begin playing.
 4. Choose the correct translation before the timer reaches zero. A wrong answer or timeout ends the game.
 5. Review your score and any missed words, then click **เล่นอีกครั้ง!** to try again.
 
 ## File Structure
 
-- `index.html` – main game page containing markup, styling and game logic
+- `index.html` – main game page containing the markup and references to external assets
+- `style.css` – custom styles for the game
+- `script.js` – game logic written in vanilla JavaScript
+- `vocabulary.js` – list of TOEIC vocabulary used in the quiz
 - `README.md` – project overview and usage instructions
 
-Feel free to modify the vocabulary list or styles in `index.html` to suit your needs. Enjoy practicing!
+Feel free to modify the vocabulary list in `vocabulary.js` or styles in `style.css` to suit your needs. Enjoy practicing!
