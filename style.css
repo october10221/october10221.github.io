@@ -52,6 +52,7 @@
                 30% 100%,               /* Outdent 3 */
                 0% 100%                 /* Bottom-left */
             );
+            position: relative;
         }
         .option-button:active {
             transform: translateY(0); /* Press down */
@@ -226,3 +227,25 @@
         .incorrect-answers-list strong {
             color: #881337; /* Rose 900 */
         }
+
+        /* Hint: Deeper clip-path for correct answer button (only tooth1 is deeper) */
+        .hint-clip {
+            clip-path: polygon(
+                0% 0%,                  /* Top-left */
+                100% 0%,                /* Top-right */
+                100% 100%,              /* Bottom-right */
+                80% 100%,               /* Start of first (deeper) tooth */
+                75% 88%,                /* Deeper indent 1 */
+                70% 100%,               /* Outdent 1 */
+                60% 100%,               /* Start of second tooth (normal) */
+                55% 90%,                /* Indent 2 (normal) */
+                50% 100%,               /* Outdent 2 */
+                40% 100%,               /* Start of third tooth (normal) */
+                35% 90%,                /* Indent 3 (normal) */
+                30% 100%,               /* Outdent 3 */
+                0% 100%                 /* Bottom-left */
+            );
+        }
+
+        /* Remove the dot hint if not needed */
+        .hint-dot { display: none; }

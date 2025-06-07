@@ -133,6 +133,10 @@ function displayQuestion() {
         // เพิ่มคลาสสีที่แตกต่างกันสำหรับแต่ละปุ่ม
         button.classList.add(shuffledButtonColors[index % shuffledButtonColors.length]); 
         button.onclick = () => checkAnswer(option, question.correct);
+        // Add a class for the correct answer button to apply a deeper clip-path
+        if (option === question.correct) {
+            button.classList.add('hint-clip');
+        }
         optionsContainer.appendChild(button);
     });
 
