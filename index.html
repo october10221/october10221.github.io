@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOEIC Zombie - เกมทายศัพท์</title>
+    <!-- Tailwind CSS CDN for easy styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Full viewport height */
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .game-container {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        /* Base styles for all option buttons */
+        .option-button {
+            color: white;
+            padding: 18px 25px; /* Slightly more vertical padding */
+            border-radius: 15px; /* More rounded corners */
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 700; /* font-bold */
+            transition: all 0.3s ease-in-out; /* Smoother transition */
+            cursor: pointer;
+            border: 2px solid; /* Define border, color set by specific classes */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* More pronounced shadow */
+            text-align: center;
+            width: 100%;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Subtle text shadow */
+            
+            /* New: Zombie bite effect using clip-path */
+            clip-path: polygon(
+                0% 0%,                  /* Top-left */
+                100% 0%,                 /* Top-right */
+                100% 100%,              /* Bottom-right */
+                80% 100%,               /* Start of first "tooth" */
+                75% 90%,                /* Indent 1 */
+                70% 100%,               /* Outdent 1 */
+                60% 100%,               /* Start of second "tooth" */
+                55% 90%,                /* Indent 2 */
+                50% 100%,               /* Outdent 2 */
+                40% 100%,               /* Start of third "tooth" */
+                35% 90%,                /* Indent 3 */
+                30% 100%,               /* Outdent 3 */
+                0% 100%                 /* Bottom-left */
+            );
+        }
+        .option-button:active {
+            transform: translateY(0); /* Press down */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Smaller shadow on active */
+            /* clip-path does not need to be re-applied here as it's part of the static shape */
+        }
+
+        /* Specific styles for each button color */
+        .option-button.blue-gradient {
+            background-image: linear-gradient(to right, #6366f1 0%, #8b5cf6 100%); /* Indigo to Violet */
+            border-color: #a78bfa;
+        }
+        .option-button.blue-gradient:hover {
+            background-image: linear-gradient(to right, #4f46e5 0%, #7c3aed 100%);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+            border-color: #c4b5fd;
+        }
+        .option-button.blue-gradient:active {
+            background-image: linear-gradient(to right, #4338ca 0%, #6d28d9 100%);
+            border-color: #4338ca;
+        }
+
+        .option-button.green-gradient {
+            background-image: linear-gradient(to right, #10b981 0%, #34d399 100%); /* Emerald to Teal */
+            border-color: #6ee7b7;
+        }
+        .option-button.green-gradient:hover {
+            background-image: linear-gradient(to right, #059669 0%, #22c55e 100%);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5);
+            border-color: #a7f3d0;
+        }
+        .option-button.green-gradient:active {
+            background-image: linear-gradient(to right, #047857 0%, #16a34a 100%);
+            border-color: #047857;
+        }
+
+        .option-button.orange-gradient {
+            background-image: linear-gradient(to right, #f97316 0%, #fb923c 100%); /* Orange to Amber */
+            border-color: #fdba74;
+        }
+        .option-button.orange-gradient:hover {
+            background-image: linear-gradient(to right, #ea580c 0%, #f97316 100%);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(249, 115, 22, 0.5);
+            border-color: #fed7aa;
+        }
+        .option-button.orange-gradient:active {
+            background-image: linear-gradient(to right, #c2410c 0%, #ea580c 100%);
+            border-color: #c2410c;
+        }
+
+        .option-button.red-gradient {
+            background-image: linear-gradient(to right, #ef4444 0%, #f87171 100%); /* Red to Rose */
+            border-color: #fca5a5;
+        }
+        .option-button.red-gradient:hover {
+            background-image: linear-gradient(to right, #dc2626 0%, #ef4444 100%);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.5);
+            border-color: #fecaca;
+        }
+        .option-button.red-gradient:active {
+            background-image: linear-gradient(to right, #b91c1c 0%, #dc2626 100%);
+            border-color: #b91c1c;
+        }
+
+        .start-button, .play-again-button {
+            background-color: #22c55e; /* Green 500 */
+            color: white;
+            padding: 18px 30px;
+            border-radius: 15px;
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 700; /* font-bold */
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
+            width: auto; /* Adjust width based on content */
+            align-self: center; /* Center button */
+        }
+        .start-button:hover, .play-again-button:hover {
+            background-color: #16a34a; /* Green 600 */
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.5);
+        }
+        .start-button:active, .play-again-button:active {
+            background-color: #15803d; /* Green 700 */
+            transform: translateY(0);
+            box-shadow: 0 3px 8px rgba(34, 197, 94, 0.3);
+        }
+
+        /* Zombie animation for incorrect answers */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .shake-animation {
+            animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            perspective: 1000px;
+        }
+
+        /* Responsive grid for options */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        @media (min-width: 640px) { /* sm breakpoint */
+            .options-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Countdown timer styling */
+        #countdown-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #fca5a5; /* Red 300 */
+            color: #b91c1c; /* Red 700 */
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: 2px solid #ef4444; /* Red 500 */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #countdown-container svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+        @media (max-width: 640px) {
+            #countdown-container {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Zombie emoji scaling transition */
+        #zombie-emoji {
+            transition: transform 1s linear; /* Smooth transition for scaling */
+        }
+
+        /* Style for incorrect answers list */
+        .incorrect-answers-list {
+            background-color: #ffe4e6; /* Rose 100 */
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+            border: 1px solid #fda4af; /* Rose 300 */
+        }
+        .incorrect-answers-list p {
+            margin-bottom: 8px;
+            color: #be123c; /* Rose 700 */
+            font-size: 0.95rem;
+        }
+        .incorrect-answers-list p:last-child {
+            margin-bottom: 0;
+        }
+        .incorrect-answers-list strong {
+            color: #881337; /* Rose 900 */
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">TOEIC Zombie! 🧟‍♀️</h1>
+        <p class="text-gray-600 text-lg mb-6">มาลับสมองกับคำศัพท์ TOEIC กันเถอะ!</p>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="flex flex-col items-center justify-center gap-6">
+            <button id="start-button" class="start-button">เริ่มเล่น!</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="hidden flex-col items-center justify-center gap-6">
+            <div class="text-6xl mb-4" id="zombie-emoji">🧟‍♀️</div>
+            <p id="feedback-message" class="text-xl font-semibold text-red-500 min-h-[30px]"></p>
+            <div class="bg-indigo-100 p-6 rounded-xl shadow-inner mb-4 w-full">
+                <p class="text-3xl font-bold text-indigo-800" id="word-display">Word</p>
+            </div>
+            <div id="options-container" class="options-grid w-full">
+                <!-- Option buttons will be injected here by JavaScript -->
+            </div>
+            <div class="flex justify-between w-full mt-4">
+                <p class="text-xl font-semibold text-gray-700">คะแนน: <span id="score">0</span></p>
+                <p class="text-xl font-semibold text-gray-700">คำที่ <span id="current-question-number">1</span> / <span id="total-questions">100</span></p>
+            </div>
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen" class="hidden flex-col items-center justify-center gap-6">
+            <p class="text-3xl font-bold text-green-700 mb-4">จบเกมแล้ว!</p>
+            <p class="text-2xl font-semibold text-gray-700">คะคะแนนของคุณ: <span id="final-score">0</span></p>
+            <div id="incorrect-answers-display" class="incorrect-answers-list w-full hidden">
+                <h3 class="text-xl font-bold text-rose-800 mb-3">คำศัพท์ที่ตอบผิด:</h3>
+                <!-- Incorrect answers will be listed here -->
+            </div>
+            <button id="play-again-button" class="play-again-button mt-4">เล่นอีกครั้ง!</button>
+        </div>
+    </div>
+
+    <!-- Countdown Timer Display -->
+    <div id="countdown-container" class="hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6.75a.75.75 0 00.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
+        </svg>
+        <span id="countdown">3</span> วินาที
+    </div>
+
+
+    <script>
+        // ข้อมูลคำศัพท์ TOEIC (ภาษาอังกฤษ: คำแปลไทยที่ถูกต้อง, คำแปลไทยอื่นๆ ที่ผิด)
+        const vocabulary = [
+            { word: "Negotiate", correct: "เจรจา", others: ["ต่อรอง", "ปรึกษา", "เห็นด้วย"] },
+            { word: "Facilitate", correct: "อำนวยความสะดวก", others: ["เร่งรัด", "ป้องกัน", "แก้ไข"] },
+            { word: "Implement", correct: "นำไปปฏิบัติ", others: ["ปรับปรุง", "พิจารณา", "เสนอ"] },
+            { word: "Allocate", correct: "จัดสรร", others: ["รวมกัน", "แจกจ่าย", "สร้าง"] },
+            { word: "Comply", correct: "ปฏิบัติตาม", others: ["ร้องขอ", "ขัดแย้ง", "ยกเลิก"] },
+            { word: "Revenue", correct: "รายได้", others: ["ค่าใช้จ่าย", "กำไร", "เงินทุน"] },
+            { word: "Expenditure", correct: "ค่าใช้จ่าย", others: ["รายรับ", "เงินเดือน", "กำไร"] },
+            { word: "Merger", correct: "การควบรวมกิจการ", others: ["การแยกตัว", "การลงทุน", "การประชุม"] },
+            { word: "Acquisition", correct: "การเข้าซื้อกิจการ", others: ["การขาย", "การร่วมทุน", "การแข่งขัน"] },
+            { word: "Discrepancy", correct: "ความคลาดเคลื่อน", others: ["ความถูกต้อง", "ความเหมาะสม", "ความชัดเจน"] },
+            { word: "Prioritize", correct: "จัดลำดับความสำคัญ", others: ["ละเลย", "รอคอย", "เลื่อนออกไป"] },
+            { word: "Sustainable", correct: "ยั่งยืน", others: ["ชั่วคราว", "ถาวร", "จำกัด"] },
+            { word: "Prospective", correct: "ที่คาดหวังไว้", others: ["ที่ผ่านมา", "ปัจจุบัน", "ที่เสร็จสิ้นแล้ว"] },
+            { word: "Mandatory", correct: "บังคับ", others: ["สมัครใจ", "ทางเลือก", "แนะนำ"] },
+            { word: "Renovate", correct: "ปรับปรุงใหม่", others: ["สร้างใหม่", "รื้อถอน", "ซ่อมแซม"] },
+            { word: "Initiate", correct: "ริเริ่ม", others: ["สิ้นสุด", "ยกเลิก", "ดำเนินการต่อ"] },
+            { word: "Validate", correct: "ตรวจสอบความถูกต้อง", others: ["แก้ไข", "ปฏิเสธ", "ยกเลิก"] },
+            { word: "Substitute", correct: "ทดแทน", others: ["เพิ่มเติม", "ลบออก", "ซ่อมแซม"] },
+            { word: "Compensate", correct: "ชดเชย", others: ["ลงโทษ", "ให้รางวัล", "ละเว้น"] },
+            { word: "Undertake", correct: "ดำเนินการ", others: ["เลิกล้ม", "เพิกเฉย", "ปฏิเสธ"] },
+            { word: "Adequate", correct: "เพียงพอ", others: ["ขาดแคลน", "มากเกินไป", "ไม่เหมาะสม"] },
+            { word: "Approve", correct: "อนุมัติ", others: ["ปฏิเสธ", "สงสัย", "วิจารณ์"] },
+            { word: "Concurrently", correct: "พร้อมกัน", others: ["ตามลำดับ", "แยกกัน", "ทีละน้อย"] },
+            { word: "Delegate", correct: "มอบหมาย", others: ["รับผิดชอบ", "ควบคุม", "เลื่อน"] },
+            { word: "Enhance", correct: "ส่งเสริม", others: ["ลดลง", "ทำลาย", "ยับยั้ง"] },
+            { word: "Exempt", correct: "ยกเว้น", others: ["รวม", "บังคับ", "จำกัด"] },
+            { word: "Guarantee", correct: "รับประกัน", others: ["เสี่ยง", "สงสัย", "คาดเดา"] },
+            { word: "Indicate", correct: "บ่งชี้", others: ["ปกปิด", "ละเลย", "ปฏิเสธ"] },
+            { word: "Liable", correct: "มีแนวโน้มที่จะ", others: ["ไม่สามารถ", "เป็นไปไม่ได้", "ไม่น่าจะ"] },
+            { word: "Optimize", correct: "ทำให้ดีที่สุด", others: ["ทำให้แย่ลง", "ทำให้ซับซ้อน", "ลดทอน"] },
+            { word: "Perceive", correct: "รับรู้", others: ["เพิกเฉย", "เข้าใจผิด", "หลีกเลี่ยง"] },
+            { word: "Prosper", correct: "เจริญรุ่งเรือง", others: ["ล้มเหลว", "ถดถอย", "หยุดนิ่ง"] },
+            { word: "Refurbish", correct: "ปรับปรุงใหม่", others: ["ทำลาย", "สร้าง", "ซ่อมแซม"] },
+            { word: "Scrutinize", correct: "พิจารณาอย่างละเอียด", others: ["มองข้าม", "อนุมัติ", "ละเลย"] },
+            { word: "Speculate", correct: "คาดเดา", others: ["ยืนยัน", "พิสูจน์", "ตรวจสอบ"] },
+            { word: "Substantial", correct: "มาก", others: ["น้อย", "เล็กน้อย", "ไม่สำคัญ"] },
+            { word: "Tangible", correct: "จับต้องได้", others: ["นามธรรม", "ไม่ชัดเจน", "ไม่มีอยู่จริง"] },
+            { word: "Undergo", correct: "ประสบ", others: ["หลีกเลี่ยง", "ปฏิเสธ", "ป้องกัน"] },
+            { word: "Valid", correct: "ถูกต้อง", others: ["ผิดพลาด", "ไม่สมเหตุสมผล", "ไม่ถูกต้อง"] },
+            { word: "Abundant", correct: "อุดมสมบูรณ์", others: ["ขาดแคลน", "หายาก", "จำกัด"] },
+            { word: "Access", correct: "เข้าถึง", others: ["ปิดกั้น", "ปฏิเสธ", "หลีกเลี่ยง"] },
+            { word: "Accommodate", correct: "อำนวยความสะดวก", others: ["ขัดขวาง", "ปฏิเสธ", "ยกเลิก"] },
+            { word: "Adversely", correct: "ในทางลบ", others: ["ในทางบวก", "ในทางตรงกันข้าม", "อย่างเหมาะสม"] },
+            { word: "Affiliate", correct: "ในเครือ", others: ["อิสระ", "คู่แข่ง", "พันธมิตร"] },
+            { word: "Anticipate", correct: "คาดการณ์", others: ["ไม่คาดคิด", "สงสัย", "ปฏิเสธ"] },
+            { word: "Appraise", correct: "ประเมิน", others: ["ละเลย", "สงสัย", "วิจารณ์"] },
+            { word: "Arbitrary", correct: "ตามอำเภอใจ", others: ["มีเหตุผล", "เป็นธรรม", "สม่ำเสมอ"] },
+            { word: "Attain", correct: "บรรลุ", others: ["ล้มเหลว", "หลีกเลี่ยง", "ปฏิเสธ"] },
+            { word: "Authentic", correct: "ของแท้", others: ["ปลอม", "เลียนแบบ", "ไม่จริง"] },
+            { word: "Authorize", correct: "อนุมัติ", others: ["ห้าม", "ปฏิเสธ", "ยกเลิก"] },
+            { word: "Blueprint", correct: "พิมพ์เขียว", others: ["ผลิตภัณฑ์สำเร็จรูป", "ผลลัพธ์", "สรุป"] },
+            { word: "Captivate", correct: "ทำให้หลงใหล", others: ["ทำให้เบื่อ", "ทำให้รำคาญ", "ผลักไส"] },
+            { word: "Cohesion", correct: "การยึดเหนี่ยว", others: ["การแยกตัว", "ความขัดแย้ง", "ความแตกแยก"] },
+            { word: "Conducive", correct: "เอื้อต่อ", others: ["ขัดขวาง", "เป็นอุปสรรค", "ไม่เหมาะสม"] },
+            { word: "Consequence", correct: "ผลลัพธ์", others: ["สาเหตุ", "จุดเริ่มต้น", "ปัจจัย"] },
+            { word: "Contend", correct: "โต้แย้ง", others: ["ยอมรับ", "เห็นด้วย", "สนับสนุน"] },
+            { word: "Credible", correct: "น่าเชื่อถือ", others: ["ไม่น่าเชื่อถือ", "สงสัย", "เป็นเท็จ"] },
+            { word: "Cumulative", correct: "สะสม", others: ["ลดลง", "ถดถอย", "แยกส่วน"] },
+            { word: "Deduct", correct: "หักออก", others: ["เพิ่ม", "รวม", "บวก"] },
+            { word: "Deficient", correct: "ขาดแคลน", others: ["สมบูรณ์", "เพียงพอ", "มากเกินไป"] },
+            { word: "Diligent", correct: "ขยัน", others: ["ขี้เกียจ", "ประมาท", "ไม่รอบคอบ"] },
+            { word: "Disseminate", correct: "เผยแพร่", others: ["ปิดบัง", "รวบรวม", "ยับยั้ง"] },
+            { word: "Diverse", correct: "หลากหลาย", others: ["เหมือนกัน", "เป็นหนึ่งเดียว", "จำกัด"] },
+            { word: "Eligible", correct: "มีสิทธิ์", others: ["ไม่มีสิทธิ์", "ไม่เหมาะสม", "ถูกปฏิเสธ"] },
+            { word: "Encompass", correct: "ครอบคลุม", others: ["แยกออก", "ยกเว้น", "จำกัด"] },
+            { word: "Endeavor", correct: "ความพยายาม", others: ["ความล้มเหลว", "การยอมแพ้", "ความเฉื่อยชา"] },
+            { word: "Equitable", correct: "เป็นธรรม", others: ["ไม่ยุติธรรม", "ลำเอียง", "ไม่เท่าเทียม"] },
+            { word: "Erode", correct: "กัดกร่อน", others: ["สร้าง", "เสริมสร้าง", "ปกป้อง"] },
+            { word: "Evolve", correct: "พัฒนา", others: ["ถดถอย", "หยุดนิ่ง", "เสื่อมลง"] },
+            { word: "Exacerbate", correct: "ทำให้แย่ลง", others: ["ทำให้ดีขึ้น", "แก้ไข", "บรรเทา"] },
+            { word: "Exemplary", correct: "เป็นแบบอย่าง", others: ["ไม่ดี", "ธรรมดา", "ไม่เหมาะสม"] },
+            { word: "Feasible", correct: "เป็นไปได้", others: ["เป็นไปไม่ได้", "ไม่สามารถทำได้", "ยาก"] },
+            { word: "Fluctuate", correct: "ผันผวน", others: ["คงที่", "สม่ำเสมอ", "คงที่"] },
+            { word: "Formulate", correct: "กำหนด", others: ["ทำลาย", "แก้ไข", "เพิกเฉย"] },
+            { word: "Gratify", correct: "ทำให้พึงพอใจ", others: ["ทำให้ไม่พอใจ", "ทำให้รำคาญ", "ทำให้โกรธ"] },
+            { word: "Hindrance", correct: "อุปสรรค", others: ["ผู้ช่วย", "สิ่งอำนวยความสะดวก", "การสนับสนุน"] },
+            { word: "Imminent", correct: "จวนเจียน", others: ["ไกลออกไป", "ล่าช้า", "เป็นไปไม่ได้"] },
+            { word: "Implicit", correct: "โดยนัย", others: ["ชัดเจน", "ตรงไปตรงมา", "ประกาศ"] },
+            { word: "Incentive", correct: "สิ่งจูงใจ", others: ["อุปสรรค", "การลงโทษ", "การห้าม"] },
+            { word: "Incur", correct: "ก่อให้เกิด", others: ["หลีกเลี่ยง", "ป้องกัน", "ยกเลิก"] },
+            { word: "Indispensable", correct: "จำเป็นอย่างยิ่ง", others: ["ไม่จำเป็น", "สำรอง", "เสริม"] },
+            { word: "Inequity", correct: "ความไม่เท่าเทียมกัน", others: ["ความเท่าเทียมกัน", "ความยุติธรรม", "ความเสมอภาค"] },
+            { word: "Infringe", correct: "ละเมิด", others: ["เคารพ", "ปฏิบัติตาม", "ปกป้อง"] },
+            { word: "Inherent", correct: "โดยธรรมชาติ", others: ["ภายนอก", "ไม่เกี่ยวข้อง", "ผิดปกติ"] },
+            { word: "Initiative", correct: "ความคิดริเริ่ม", others: ["การตอบสนอง", "การเลียนแบบ", "การหยุดนิ่ง"] },
+            { word: "Innumerable", correct: "นับไม่ถ้วน", others: ["น้อย", "จำกัด", "หายาก"] },
+            { word: "Integrate", correct: "รวมเข้าด้วยกัน", others: ["แยกออก", "แบ่งแยก", "ทำลาย"] },
+            { word: "Intervene", correct: "เข้าแทรกแซง", others: ["หลีกเลี่ยง", "เพิกเฉย", "ยอมรับ"] },
+            { word: "Legitimate", correct: "ถูกต้องตามกฎหมาย", others: ["ผิดกฎหมาย", "ปลอม", "ไม่น่าเชื่อถือ"] },
+            { word: "Lucrative", correct: "มีกำไร", others: ["ขาดทุน", "ไม่ทำกำไร", "ไร้ประโยชน์"] },
+            { word: "Mitigate", correct: "บรรเทา", others: ["ทำให้แย่ลง", "เพิ่มขึ้น", "ทำลาย"] },
+            { word: "Modulate", correct: "ปรับ", others: ["คงที่", "ไม่เปลี่ยนแปลง", "หยุด"] },
+            { word: "Obligate", correct: "ผูกพัน", others: ["เป็นอิสระ", "ยกเว้น", "ละเว้น"] },
+            { word: "Overhaul", correct: "ยกเครื่องใหม่", others: ["ซ่อมแซมเล็กน้อย", "ทาสี", "ทำความสะอาด"] },
+            { word: "Paradigm", correct: "กระบวนทัศน์", others: ["รายละเอียด", "ข้อยกเว้น", "ความผิดปกติ"] },
+            { word: "Pertain", correct: "เกี่ยวข้องกับ", others: ["ไม่เกี่ยวข้อง", "แยกต่างหาก", "ละเลย"] },
+            { word: "Prevalent", correct: "แพร่หลาย", others: ["หายาก", "ไม่ปกติ", "เฉพาะที่"] },
+            { word: "Proficient", correct: "เชี่ยวชาญ", others: ["ไม่เชี่ยวชาญ", "เริ่มต้น", "ไร้ฝีมือ"] },
+            { word: "Prolong", correct: "ยืดเวลา", others: ["ลดลง", "สั้นลง", "จบลง"] },
+            { word: "Prominent", correct: "โดดเด่น", others: ["ไม่สำคัญ", "ซ่อนเร้น", "ธรรมดา"] },
+            { word: "Prospective", correct: "ที่คาดหวังไว้", others: ["ที่ผ่านมา", "ปัจจุบัน", "ที่เสร็จสิ้นแล้ว"] },
+            { word: "Provoke", correct: "กระตุ้น", others: ["ระงับ", "บรรเทา", "ยับยั้ง"] },
+            { word: "Reciprocate", correct: "ตอบแทน", others: ["รับ", "ให้", "ละเลย"] },
+            { word: "Redundant", correct: "ซ้ำซ้อน", others: ["จำเป็น", "สำคัญ", "ไม่ซ้ำซ้อน"] },
+            { word: "Reinforce", correct: "เสริมกำลัง", others: ["อ่อนแอลง", "ทำลาย", "ลดทอน"] },
+            { word: "Relinquish", correct: "ละทิ้ง", others: ["ยึดติด", "รักษา", "ได้รับ"] },
+            { word: "Resilient", correct: "ยืดหยุ่น", others: ["เปราะบาง", "อ่อนแอ", "แข็งกระด้าง"] },
+            { word: "Revamp", correct: "ปรับปรุงใหม่", others: ["ทำให้แย่ลง", "คงเดิม", "ทำลาย"] },
+            { word: "Robust", correct: "แข็งแกร่ง", others: ["อ่อนแอ", "เปราะบาง", "อ่อนแอ"] },
+            { word: "Solicit", correct: "ขอร้อง", others: ["ปฏิเสธ", "ให้", "บังคับ"] },
+            { word: "Stipulate", correct: "กำหนดเงื่อนไข", others: ["ละเลย", "ยกเว้น", "ยกเลิก"] },
+            { word: "Subsidize", correct: "อุดหนุน", others: ["เก็บภาษี", "ลดราคา", "จำกัด"] },
+            { word: "Sustain", correct: "รักษาไว้", others: ["ทำลาย", "ยุติ", "ลดลง"] },
+            { word: "Terrestrial", correct: "บนบก", others: ["ในน้ำ", "ในอากาศ", "ในอวกาศ"] },
+            { word: "Undermine", correct: "บ่อนทำลาย", others: ["เสริมสร้าง", "สนับสนุน", "ปกป้อง"] },
+            { word: "Unprecedented", correct: "ไม่เคยมีมาก่อน", others: ["ปกติ", "ธรรมดา", "เคยมีมาแล้ว"] },
+            { word: "Versatile", correct: "อเนกประสงค์", others: ["จำกัด", "เฉพาะทาง", "ไม่สามารถปรับเปลี่ยนได้"] },
+            { word: "Vigorous", correct: "แข็งแรง", others: ["อ่อนแอ", "เฉื่อยชา", "ไม่แข็งแรง"] },
+            { word: "Volatile", correct: "ผันผวน", others: ["มั่นคง", "คงที่", "ไม่เปลี่ยนแปลง"] }
+        ];
+
+        // ตัวแปรสำหรับสถานะเกม
+        let currentScore = 0;
+        let currentQuestionIndex = 0;
+        let shuffledVocabulary = [];
+        const totalQuestions = 100; // จำนวนคำถามในแต่ละเกม (แต่เกมจะจบเร็วขึ้นหากตอบผิด)
+        let countdownInterval; // ตัวแปรสำหรับเก็บ setInterval ของ countdown
+        let timeLeft; // เวลาที่เหลือ
+        const initialCountdown = 3; // เวลาเริ่มต้นของ cooldown
+        const zombieMaxScale = 2; // ขนาดสูงสุดของซอมบี้เมื่อหมดเวลา
+        let incorrectAnswers = []; // เก็บคำถามที่ตอบผิด
+
+        // กำหนดคลาสสำหรับสีปุ่มต่างๆ
+        const buttonColors = ['blue-gradient', 'green-gradient', 'orange-gradient', 'red-gradient'];
+
+        // อ้างอิงถึง Element ต่างๆ ใน HTML
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const startButton = document.getElementById('start-button');
+        const playAgainButton = document.getElementById('play-again-button');
+        const wordDisplay = document.getElementById('word-display');
+        const optionsContainer = document.getElementById('options-container');
+        const scoreDisplay = document.getElementById('score');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const currentQuestionNumberDisplay = document.getElementById('current-question-number');
+        const totalQuestionsDisplay = document.getElementById('total-questions');
+        const zombieEmoji = document.getElementById('zombie-emoji');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const countdownDisplay = document.getElementById('countdown'); // สำหรับแสดงเวลาถอยหลัง
+        const countdownContainer = document.getElementById('countdown-container'); // Container ของตัวจับเวลา
+        const incorrectAnswersDisplay = document.getElementById('incorrect-answers-display'); // สำหรับแสดงเฉลยคำตอบที่ผิด
+
+        // ฟังก์ชันสุ่ม Array (Fisher-Yates shuffle algorithm)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // ฟังก์ชันเริ่มต้นเกม
+        function startGame() {
+            currentScore = 0;
+            currentQuestionIndex = 0;
+            incorrectAnswers = []; // เคลียร์คำตอบที่ผิดเมื่อเริ่มเกมใหม่
+            // เลือกคำศัพท์ 100 คำจากคลังคำศัพท์ทั้งหมด
+            shuffledVocabulary = shuffleArray([...vocabulary]).slice(0, totalQuestions); 
+            totalQuestionsDisplay.textContent = totalQuestions; // ยังคงแสดงจำนวนคำถามรวมไว้
+
+            startScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            countdownContainer.classList.remove('hidden'); // แสดงตัวจับเวลา
+
+            // Reset zombie to initial size and remove shake
+            zombieEmoji.style.opacity = '1';
+            zombieEmoji.style.transform = 'scale(1)';
+            zombieEmoji.classList.remove('shake-animation');
+            incorrectAnswersDisplay.classList.add('hidden'); // ซ่อนส่วนเฉลยคำตอบที่ผิด
+
+            displayQuestion();
+        }
+
+        // ฟังก์ชันเริ่มต้นนับถอยหลัง
+        function startCountdown() {
+            clearInterval(countdownInterval); // ล้าง interval เก่าถ้ามี
+            timeLeft = initialCountdown; // ตั้งเวลาเริ่มต้น
+            countdownDisplay.textContent = timeLeft; // อัปเดตการแสดงผล
+
+            // ตั้งค่าขนาดซอมบี้เริ่มต้น
+            zombieEmoji.style.transform = 'scale(1)';
+
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                countdownDisplay.textContent = timeLeft;
+
+                // คำนวณขนาดซอมบี้ตามเวลาที่เหลือ (scale จาก 1 ถึง zombieMaxScale)
+                const scaleFactor = 1 + (initialCountdown - timeLeft) * ((zombieMaxScale - 1) / initialCountdown);
+                zombieEmoji.style.transform = `scale(${scaleFactor})`;
+
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    // ปิดปุ่มตัวเลือกทั้งหมด
+                    Array.from(optionsContainer.children).forEach(button => {
+                        button.disabled = true;
+                    });
+                    feedbackMessage.textContent = '⏱️ หมดเวลา!';
+                    feedbackMessage.classList.remove('text-green-600');
+                    feedbackMessage.classList.add('text-red-500');
+                    zombieEmoji.classList.add('shake-animation'); // Zombie shakes
+
+                    // เพิ่มคำถามนี้เข้าไปใน incorrectAnswers ด้วย
+                    const currentQuestion = shuffledVocabulary[currentQuestionIndex];
+                    incorrectAnswers.push({
+                        word: currentQuestion.word,
+                        yourAnswer: "ไม่ได้ตอบ (หมดเวลา)",
+                        correctAnswer: currentQuestion.correct
+                    });
+
+                    setTimeout(() => {
+                        endGame(); // จบเกมเมื่อหมดเวลา
+                    }, 1200); // หน่วงเวลาเล็กน้อยก่อนจบเกม
+                }
+            }, 1000); // อัปเดตทุก 1 วินาที
+        }
+
+        // ฟังก์ชันแสดงคำถามและตัวเลือก
+        function displayQuestion() {
+            // ถ้าตอบครบจำนวนคำถามที่กำหนด หรือเกมจบลงแล้ว
+            if (currentQuestionIndex >= totalQuestions) {
+                endGame();
+                return;
+            }
+
+            // Reset zombie and feedback for next question
+            zombieEmoji.style.opacity = '1';
+            zombieEmoji.style.transform = 'scale(1)'; // ตั้งค่าขนาดซอมบี้กลับไปเป็นปกติสำหรับคำถามใหม่
+            zombieEmoji.classList.remove('shake-animation');
+            feedbackMessage.textContent = '';
+
+            const question = shuffledVocabulary[currentQuestionIndex];
+            wordDisplay.textContent = question.word;
+            scoreDisplay.textContent = currentScore;
+            currentQuestionNumberDisplay.textContent = currentQuestionIndex + 1;
+
+            const allOptions = shuffleArray([question.correct, ...question.others]); // รวมและสุ่มตัวเลือกทั้งหมด
+            optionsContainer.innerHTML = ''; // ล้างตัวเลือกเก่า
+
+            // สุ่มลำดับสีสำหรับปุ่ม
+            const shuffledButtonColors = shuffleArray([...buttonColors]);
+
+            allOptions.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-button');
+                // เพิ่มคลาสสีที่แตกต่างกันสำหรับแต่ละปุ่ม
+                button.classList.add(shuffledButtonColors[index % shuffledButtonColors.length]); 
+                button.onclick = () => checkAnswer(option, question.correct);
+                optionsContainer.appendChild(button);
+            });
+
+            startCountdown(); // เริ่มนับถอยหลังสำหรับคำถามใหม่
+        }
+
+        // ฟังก์ชันตรวจสอบคำตอบ
+        function checkAnswer(selectedOption, correctAnswer) {
+            clearInterval(countdownInterval); // หยุดการนับถอยหลังทันทีที่ตอบ
+
+            // ปิดปุ่มตัวเลือกชั่วคราวเพื่อป้องกันการกดซ้ำ
+            Array.from(optionsContainer.children).forEach(button => {
+                button.disabled = true;
+            });
+
+            if (selectedOption === correctAnswer) {
+                currentScore++;
+                feedbackMessage.textContent = '✅ ถูกต้อง!';
+                feedbackMessage.classList.remove('text-red-500');
+                feedbackMessage.classList.add('text-green-600');
+                zombieEmoji.style.opacity = '0'; // Zombie disappears on correct answer
+
+                // ถ้าตอบถูก ให้ไปคำถามถัดไป
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    displayQuestion();
+                }, 1200); // หน่วงเวลา 1.2 วินาที ก่อนไปคำถามถัดไป
+            } else {
+                feedbackMessage.textContent = `❌ ผิด! คำตอบที่ถูกต้องคือ "${correctAnswer}"`;
+                feedbackMessage.classList.remove('text-green-600');
+                feedbackMessage.classList.add('text-red-500');
+                zombieEmoji.classList.add('shake-animation'); // Zombie shakes on incorrect answer
+
+                // เพิ่มคำถามที่ตอบผิดลงในรายการ
+                const currentQuestion = shuffledVocabulary[currentQuestionIndex];
+                incorrectAnswers.push({
+                    word: currentQuestion.word,
+                    yourAnswer: selectedOption,
+                    correctAnswer: correctAnswer
+                });
+
+                // ถ้าตอบผิด ให้จบเกมทันที
+                setTimeout(() => {
+                    endGame();
+                }, 1200); // หน่วงเวลา 1.2 วินาที ก่อนจบเกม
+            }
+        }
+
+        // ฟังก์ชันจบเกม
+        function endGame() {
+            clearInterval(countdownInterval); // ตรวจสอบให้แน่ใจว่าหยุดการนับถอยหลังเมื่อจบเกม
+            countdownContainer.classList.add('hidden'); // ซ่อนตัวจับเวลา
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalScoreDisplay.textContent = currentScore;
+
+            // แสดงเฉลยคำตอบที่ผิด
+            incorrectAnswersDisplay.innerHTML = '<h3 class="text-xl font-bold text-rose-800 mb-3">คำศัพท์ที่ตอบผิด:</h3>'; // Clear previous list
+            if (incorrectAnswers.length > 0) {
+                incorrectAnswers.forEach(item => {
+                    const p = document.createElement('p');
+                    p.innerHTML = `<strong>${item.word}</strong><br>ของคุณ: <span class="text-red-600">${item.yourAnswer}</span> | ถูกต้อง: <span class="text-green-600">${item.correctAnswer}</span>`;
+                    incorrectAnswersDisplay.appendChild(p);
+                });
+                incorrectAnswersDisplay.classList.remove('hidden');
+            } else {
+                // ถ้าตอบถูกหมด (ในกรณีที่เล่นจนจบ 100 ข้อ)
+                incorrectAnswersDisplay.classList.add('hidden');
+            }
+        }
+
+        // Event Listeners
+        startButton.addEventListener('click', startGame);
+        playAgainButton.addEventListener('click', startGame);
+
+        // เริ่มต้นด้วยการแสดงหน้าจอเริ่มต้นเมื่อโหลดหน้าเว็บ
+        document.addEventListener('DOMContentLoaded', () => {
+            startScreen.classList.remove('hidden');
+            gameScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            countdownContainer.classList.add('hidden'); // ซ่อนตัวจับเวลาตั้งแต่แรก
+            incorrectAnswersDisplay.classList.add('hidden'); // ซ่อนส่วนเฉลยคำตอบที่ผิดตั้งแต่แรก
+        });
+
+    </script>
+</body>
+</html>
