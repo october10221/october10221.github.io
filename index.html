@@ -21,7 +21,7 @@
 
         <!-- Game Screen -->
         <div id="game-screen" class="hidden flex-col items-center justify-center gap-6">
-            <div class="text-6xl mb-4" id="zombie-emoji">🧟‍♀️</div>
+            <div class="zombie-emoji-wrapper"><div class="text-6xl mb-4" id="zombie-emoji">🧟‍♀️</div></div>
             <p id="feedback-message" class="text-xl font-semibold text-red-500 min-h-[30px]"></p>
             <div class="bg-indigo-100 p-6 rounded-xl shadow-inner mb-4 w-full">
                 <p class="text-3xl font-bold text-indigo-800" id="word-display">Word</p>
@@ -46,14 +46,6 @@
             <button id="play-again-button" class="play-again-button mt-4">เล่นอีกครั้ง!</button>
         </div>
     </div>
-
-    <!-- Countdown Timer Display -->
-    <div id="countdown-container" class="hidden">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6.75a.75.75 0 00.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
-        </svg>
-        <span id="countdown">3</span> วินาที
-</div>
 
     <script type="module" src="script.js"></script>
 </body>

@@ -29,8 +29,6 @@ const currentQuestionNumberDisplay = document.getElementById('current-question-n
 const totalQuestionsDisplay = document.getElementById('total-questions');
 const zombieEmoji = document.getElementById('zombie-emoji');
 const feedbackMessage = document.getElementById('feedback-message');
-const countdownDisplay = document.getElementById('countdown'); // สำหรับแสดงเวลาถอยหลัง
-const countdownContainer = document.getElementById('countdown-container'); // Container ของตัวจับเวลา
 const incorrectAnswersDisplay = document.getElementById('incorrect-answers-display'); // สำหรับแสดงเฉลยคำตอบที่ผิด
 
 // ฟังก์ชันสุ่ม Array (Fisher-Yates shuffle algorithm) นำเข้าใน utils.js
@@ -46,7 +44,6 @@ function startGame() {
     startScreen.classList.add('hidden');
     endScreen.classList.add('hidden');
     gameScreen.classList.remove('hidden');
-    countdownContainer.classList.remove('hidden'); // แสดงตัวจับเวลา
 
     // Reset zombie to initial size and remove shake
     zombieEmoji.style.opacity = '1';
@@ -57,26 +54,41 @@ function startGame() {
     displayQuestion();
 }
 
+// Utility to update the countdown badge on the zombie icon
+function updateZombieCountdownBadge(time) {
+    let badge = zombieEmoji.querySelector('.zombie-countdown-badge');
+    if (time > 0) {
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'zombie-countdown-badge';
+            zombieEmoji.appendChild(badge);
+        }
+        badge.textContent = time;
+    } else if (badge) {
+        badge.remove();
+    }
+}
+
 // ฟังก์ชันเริ่มต้นนับถอยหลัง
 function startCountdown() {
     clearInterval(countdownInterval); // ล้าง interval เก่าถ้ามี
     timeLeft = initialCountdown; // ตั้งเวลาเริ่มต้น
-    countdownDisplay.textContent = timeLeft; // อัปเดตการแสดงผล
+    updateZombieCountdownBadge(timeLeft); // Show badge
 
     // ตั้งค่าขนาดซอมบี้เริ่มต้น
     zombieEmoji.style.transform = 'scale(1)';
 
     countdownInterval = setInterval(() => {
         timeLeft--;
-        countdownDisplay.textContent = timeLeft;
+        updateZombieCountdownBadge(timeLeft);
 
         // คำนวณขนาดซอมบี้ตามเวลาที่เหลือ (scale จาก 1 ถึง zombieMaxScale)
         const scaleFactor = 1 + (initialCountdown - timeLeft) * ((zombieMaxScale - 1) / initialCountdown);
         zombieEmoji.style.transform = `scale(${scaleFactor})`;
 
-
         if (timeLeft <= 0) {
             clearInterval(countdownInterval);
+            updateZombieCountdownBadge(0); // Remove badge
             // ปิดปุ่มตัวเลือกทั้งหมด
             Array.from(optionsContainer.children).forEach(button => {
                 button.disabled = true;
@@ -188,7 +200,7 @@ function checkAnswer(selectedOption, correctAnswer) {
 // ฟังก์ชันจบเกม
 function endGame() {
     clearInterval(countdownInterval); // ตรวจสอบให้แน่ใจว่าหยุดการนับถอยหลังเมื่อจบเกม
-    countdownContainer.classList.add('hidden'); // ซ่อนตัวจับเวลา
+    updateZombieCountdownBadge(0); // Remove badge
     gameScreen.classList.add('hidden');
     endScreen.classList.remove('hidden');
     finalScoreDisplay.textContent = currentScore;
@@ -217,7 +229,6 @@ document.addEventListener('DOMContentLoaded', () => {
     startScreen.classList.remove('hidden');
     gameScreen.classList.add('hidden');
     endScreen.classList.add('hidden');
-    countdownContainer.classList.add('hidden'); // ซ่อนตัวจับเวลาตั้งแต่แรก
     incorrectAnswersDisplay.classList.add('hidden'); // ซ่อนส่วนเฉลยคำตอบที่ผิดตั้งแต่แรก
 });
 
