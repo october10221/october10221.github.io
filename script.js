@@ -1,4 +1,5 @@
 import { vocabulary } from "./vocabulary.js";
+import { shuffleArray } from "./utils.js";
 
 // ตัวแปรสำหรับสถานะเกม
 let currentScore = 0;
@@ -32,15 +33,7 @@ const countdownDisplay = document.getElementById('countdown'); // สำหร�
 const countdownContainer = document.getElementById('countdown-container'); // Container ของตัวจับเวลา
 const incorrectAnswersDisplay = document.getElementById('incorrect-answers-display'); // สำหรับแสดงเฉลยคำตอบที่ผิด
 
-// ฟังก์ชันสุ่ม Array (Fisher-Yates shuffle algorithm)
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
+// ฟังก์ชันสุ่ม Array (Fisher-Yates shuffle algorithm) นำเข้าใน utils.js
 // ฟังก์ชันเริ่มต้นเกม
 function startGame() {
     currentScore = 0;
